@@ -31,37 +31,13 @@ foreach ($events as $event) {
     error_log('Non message event has come');
     continue;
   }
-  // LocationMessageクラスのインスタンスでなければ処理をスキップ
-  if (!($event instanceof \LINE\LINEBot\Event\MessageEvent\LocationMessage)) {
-    $bot->replyText($event->getReplyToken(), "位置情報を送信してください。");
+  // TextMessageクラスのインスタンスでなければ処理をスキップ
+  if (!($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage)) {
+    error_log('Non text message has come');
     continue;
   }
   // オウム返し
-  //$bot->replyText($event->getReplyToken(), $event->getText());
-
-  //APIをコール
-  $jsonString = file_get_contents('https://icollabo.jp/imatchopt/json/JsonGetFacilitiesList.json?loc=' . $event->getLatitude() . '_' . $event->getLongitude() . '&svckb=04&distance=500&vl=q9cKef6r8vda');
-
-  $messageStr = "";
-  // 文字列を連想配列に変換
-  $obj = json_decode($jsonString, true);
-  foreach ($obj['facilitiesList'] as $key => $val){
-    error_log($key);
-    $messageStr = $messageStr . "\r\n" . '現在地からの距離：' . $val["distance"] . 'm';
-    $messageStr = $messageStr . "\r\n" . $val["facilitiesName"];
-    $messageStr = $messageStr . "\r\n" . $val["zipNo"] . " " . $val["address"];
-    $messageStr = $messageStr . "\r\n" . $val["telNo"];
-    $messageStr = $messageStr . "\r\n";
-
-  }
-  if ($messageStr <> ""){
-    //施設情報を返す
-    $messageStr = 'お近くの薬局情報' . "\r\n" . $messageStr;
-  } else {
-    $messageStr = 'お近くの薬局は見つかりませんでした。';
-  }
-  $bot->replyText($event->getReplyToken(), $messageStr);
-
+  $bot->replyText($event->getReplyToken(), $event->getText());
 }
 
 // テキストを返信。引数はLINEBot、返信先、テキスト
